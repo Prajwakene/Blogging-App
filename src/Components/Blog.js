@@ -5,11 +5,18 @@ export default function Blog() {
   //creting a state for title
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+//   empty array to store the title and content of the previoes blogs
+  const [blogs, setBlogs] = useState([]);
 
 
 //Passing the synthetic event as argument to stop refreshing the page on submit
   function handleSubmit(e) {
     e.preventDefault();
+
+    //using REST OPERATOR in javascript in which 
+    // array is holding the object of title and content of blog
+    setBlogs([{title, content},...blogs]);
+    console.log(blogs)
   }
 
   return (
@@ -51,8 +58,14 @@ export default function Blog() {
 
       {/* Section where submitted blogs will be displayed */}
       <h2> Blogs </h2>
-      <h3>{title}</h3>
-      <h3>{content}</h3>
+      {/* mapping our the previous blogs and showing it on the screen */}
+      {blogs.map((blog,i) => (
+        <div className="blog" key={i}>
+            <h3>{blog.title}</h3>
+            <h3>{blog.content}</h3>
+        </div>
+      ))}
+      
     </>
   );
 }
