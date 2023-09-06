@@ -19,11 +19,14 @@ export default function Blog() {
     setBlogs([{ title:formData.title, content:formData.content }, ...blogs]);
     //making the field titile and content empty after
     //  printing the blogs titile and content
-    setFormData({title: formData.title, content:formData.content})
+    setFormData({title:"" , content:""})
     console.log(blogs);
     
   }
 
+  function removeBlog(i){
+    setBlogs(blogs.filter((blog,index) => i!==index));
+  }
   return (
     <>
       {/* Heading of the page */}
@@ -69,6 +72,13 @@ export default function Blog() {
         <div className="blog" key={i}>
           <h3>{blog.title}</h3>
           <p>{blog.content}</p>
+          <div className="blog-btn">
+            {/* //i is the blog number or the id of the blog which we need to delete  */}
+            <button onClick={() => removeBlog(i)} className="btn remove">
+              Delete
+            </button>
+
+          </div>
         </div>
       ))}
     </>
