@@ -1,6 +1,19 @@
 //using useRef hook for focus the input filed
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useReducer } from "react";
 
+function blogsReducer(state, action){
+    switch(action.type){
+      case "ADD":
+        //filtrering out the array the which we want to ADD
+        return[action.blog, ...state];
+      case "REMOVE":
+        //filtrering out the array the which we want to delete
+        return state.filter((blog, index) => index !== action.index);
+        //default case : to by default return
+        default :
+          return [];
+    }
+}
 //Blogging App using Hooks
 export default function Blog() {
   //creting a state for title
@@ -9,18 +22,39 @@ export default function Blog() {
 
   const [formData, setFormData] = useState({ title: "", content: "" });
   //   empty array to store the title and content of the previoes blogs
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
+  
+  //replacing above useState hook using the useReducer();
+  const[blogs, dispatch] = useReducer(blogsReducer, [])
   //nulll for the initial render ...anyway its going to change after the initail render
   //this titleRef should be assign to field i want to reference to
   const titleRef = useRef(null);
 
+  useEffect(() => {
+    titleRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    //checking if the re is alrady the blog arrray
+    if (blogs.length && blogs[0].title) {
+      //1st blogs should be title
+      document.title = blogs[0].title;
+    }else{
+      // if ther eis no blogs th en title should be
+      document.title = "No Blogs!!" 
+    }
+    //the title should be changed when the blog is updated
+  }, [blogs]);
   //Passing the synthetic event as argument to stop refreshing the page on submit
   function handleSubmit(e) {
     e.preventDefault();
 
     //using REST OPERATOR in javascript in which
     // array is holding the object of title and content of blog
-    setBlogs([{ title: formData.title, content: formData.content }, ...blogs]);
+    // setBlogs([{ title: formData.title, content: formData.content }, ...blogs]);
+
+    dispatch({type: "ADD", blog:{title: formData.title, content: formData.content}})
+
     //making the field titile and content empty after
     //  printing the blogs titile and content
     setFormData({ title: "", content: "" });
@@ -29,9 +63,9 @@ export default function Blog() {
     console.log(blogs);
   }
 
-  
   function removeBlog(i) {
-    setBlogs(blogs.filter((blog, index) => i !== index));
+    // setBlogs(blogs.filter((blog, index) => i !== index));
+    dispatch({type: "REMOVE", index: i})
   }
   return (
     <>
@@ -66,6 +100,7 @@ export default function Blog() {
             <textarea
               className="input content"
               placeholder="Content of the Blog..."
+              required
               value={formData.content}
               onChange={(e) =>
                 setFormData({ title: formData.title, content: e.target.value })
